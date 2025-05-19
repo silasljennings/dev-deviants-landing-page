@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Dev Deviants{% endblock %}
+
+{% block content %}
+    <section id="main">
+{#        <img src="{{ url_for('static', filename='images/dev-deviants.png') }}" alt="Dev Deviants Logo Image">#}
+        <h1>Dev Deviants</h1>
+        <p>Join the pack—subscribe now to get the latest blog posts, early merch drops, and insider dev tips.</p>
+        <section id="subscribe">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, msg in messages %}
+                    <div class="flash {{ category }}">{{ msg }}</div>
+                {% endfor %}
+            {% endwith %}
+            <form method="post" action="{{ url_for('index') }}">
+                <label>
+                    <input type="email" name="email" placeholder="your@example.com" required>
+                </label>
+                <button type="submit">Subscribe</button>
+            </form>
+        </section>
+    </section>
+{% endblock %}

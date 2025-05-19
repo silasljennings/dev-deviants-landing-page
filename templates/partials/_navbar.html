@@ -1,0 +1,23 @@
+<nav>
+    <div class="nav-container">
+{#        <a class="logo" href="{{ url_for('index') }}">Dev Deviants</a>#}
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            ☰
+        </button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">Home</a></li>
+            <li><a href="https://devdeviants.com">Blog</a></li>
+            <li><a href="https://portfolio.devdeviants.com">Portfolio</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+    </div>
+</nav>
+
+<script>
+    // simple toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks  = document.getElementById('navLinks');
+    navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+</script>
