@@ -25,14 +25,15 @@ def create():
         if not email:
             return {"message": "Please enter a valid email address", "category": "error"}, 400  # Send error message as JSON
 
-        # Check if email is already in the database
-        uid = str(uuid.uuid4())  # Generates a unique string UID
-        doc_ref = db.collection(collection_path).document(uid)
-        if doc_ref.get().exists:
+        query = db.collection(collection_path).where('email', '==', email).limit(1)
+        docs = query.stream()
+        if any(d.exists for d in docs):
             return {"message": "That email is already a subscriber", "category": "info"}, 400  # Send error message as JSON
         else:
+            uid = str(uuid.uuid4())  # Generates a unique string UID
+            new_doc_ref = db.collection(collection_path).document(uid)
             # Add new subscriber
-            doc_ref.set({
+            new_doc_ref.set({
                 'uid': uid,
                 'email': email,
                 'subscribed_at': firestore.SERVER_TIMESTAMP,
