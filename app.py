@@ -3,18 +3,14 @@ from datetime import datetime
 from firebase_admin import credentials, firestore, initialize_app
 import uuid
 
-
-
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change-this')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-secret-key')
 
-cred = credentials.Certificate("./service-account-key.json")
-initialize_app(cred)
+initialize_app()
 db = firestore.client()
-
-collection_path = 'subscribers' # collection name
+collection_path = 'subscribers'
 
 @app.route('/', methods=['POST'])
 def create():
