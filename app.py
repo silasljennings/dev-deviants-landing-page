@@ -7,6 +7,7 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-secret-key')
+print(f"SECRET_KEY is set to: {app.config['SECRET_KEY']}")
 
 initialize_app()
 db = firestore.client()
@@ -29,6 +30,7 @@ def create():
             uid = str(uuid.uuid4())  # Generates a unique string UID
             new_doc_ref = db.collection(collection_path).document(uid)
             # Add new subscriber
+            # todo: break out into model class
             new_doc_ref.set({
                 'uid': uid,
                 'email': email,
