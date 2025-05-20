@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from datetime import datetime
 from firebase_admin import credentials, firestore, initialize_app
+import uuid
+
 
 
 import os
@@ -12,7 +14,7 @@ cred = credentials.Certificate("./service-account-key.json")
 initialize_app(cred)
 db = firestore.client()
 
-SUBSCRIBERS = 'subscribers' # collection name
+collection_path = 'subscribers' # collection name
 
 @app.route('/', methods=['POST'])
 def create():
@@ -24,12 +26,14 @@ def create():
             return {"message": "Please enter a valid email address", "category": "error"}, 400  # Send error message as JSON
 
         # Check if email is already in the database
-        doc_ref = db.collection(SUBSCRIBERS).document(email)
+        uid = str(uuid.uuid4())  # Generates a unique string UID
+        doc_ref = db.collection(collection_path).document(uid)
         if doc_ref.get().exists:
             return {"message": "That email is already a subscriber", "category": "info"}, 400  # Send error message as JSON
         else:
             # Add new subscriber
             doc_ref.set({
+                'uid': uid,
                 'email': email,
                 'subscribed_at': firestore.SERVER_TIMESTAMP,
                 'isVerified': False
