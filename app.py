@@ -18,25 +18,27 @@ SUBSCRIBERS = 'subscribers' # collection name
 def create():
     try:
         email = request.form.get('email', '').strip().lower()
-        if not email:
-            flash('Please enter a valid email address.', 'error')
-            return redirect(url_for('index'))
 
-        # Check if already subscribed
+        # Validate email
+        if not email:
+            return {"message": "Please enter a valid email address", "category": "error"}, 400  # Send error message as JSON
+
+        # Check if email is already in the database
         doc_ref = db.collection(SUBSCRIBERS).document(email)
         if doc_ref.get().exists:
-            flash('That email is already subscribed.', 'info')
+            return {"message": "That email is already a subscriber", "category": "info"}, 400  # Send error message as JSON
         else:
-            # write new subscriber
+            # Add new subscriber
             doc_ref.set({
                 'email': email,
-                'subscribed_at': firestore.SERVER_TIMESTAMP
+                'subscribed_at': firestore.SERVER_TIMESTAMP,
+                'isVerified': False
             })
-            flash('Thank you for subscribing!', 'success')
+            return {"message": "Thank you for subscribing! Please verify your email!", "category": "success"}, 200  # Send success message as JSON
 
-        return redirect(url_for('index'))
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return {"message": f"An Error Occurred: {str(e)}", "category": "error"}, 500  # Send error message if an exception occurs
+
 
 
 @app.route('/', methods=['GET'])

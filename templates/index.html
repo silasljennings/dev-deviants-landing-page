@@ -4,21 +4,26 @@
 
 {% block content %}
     <section id="main">
-{#        <img src="{{ url_for('static', filename='images/dev-deviants.png') }}" alt="Dev Deviants Logo Image">#}
         <h1>Dev Deviants</h1>
-        <p>Join the pack—subscribe now to get the latest blog posts, early merch drops, and insider dev tips.</p>
+        <p>Join the pack by subscribing now and get all the latest blog posts, early access to merch drops, and insider dev tips.</p>
+
         <section id="subscribe">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% for category, msg in messages %}
-                    <div class="flash {{ category }}">{{ msg }}</div>
-                {% endfor %}
-            {% endwith %}
-            <form method="post" action="{{ url_for('index') }}">
-                <label>
-                    <input type="email" name="email" placeholder="your@example.com" required>
-                </label>
-                <button type="submit">Subscribe</button>
+                 <form method="post" id="subscribe-form" action="{{ url_for('index') }}">
+                <div class="form-container">
+                    <label>
+                        <input type="email" name="email" id="email-input" placeholder="your@example.com" required>
+                    </label>
+                    <div class="submission-container">
+                        <button type="submit" id="submit-button">Subscribe</button>
+                        <span class="spinner" id="loading-spinner" style="display: none;"></span> <!-- Hide the spinner by default -->
+                    </div>
+                </div>
             </form>
+
+            <div id="flash-messages"></div>
         </section>
     </section>
+
+    <script src="{{ url_for('static', filename='scripts/form-handler.js') }}"></script>
+
 {% endblock %}
