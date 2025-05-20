@@ -1,5 +1,5 @@
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
-import {adminApp} from "../src";
+import {adminApp} from "../index";
 
 const secretManagerClient = new SecretManagerServiceClient();
 
