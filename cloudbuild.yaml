@@ -19,7 +19,7 @@ steps:
       'deploy',
       '$REPO_NAME',
       '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$REPO_NAME:$SHORT_SHA',
-      '--region', 'us-central1'
+      '--region', 'us-central1',
       '--set-env-vars', 'SECRET_KEY=$(openssl rand -hex 24)'
     ]
 
