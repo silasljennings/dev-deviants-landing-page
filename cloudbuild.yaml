@@ -2,7 +2,6 @@ steps:
   # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$REPO_NAME:$SHORT_SHA', '.']
-    secretEnv: []
 
   # Verify the image was built and tagged correctly
   - name: 'gcr.io/cloud-builders/docker'
@@ -21,6 +20,7 @@ steps:
       '$REPO_NAME',
       '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$REPO_NAME:$SHORT_SHA',
       '--region', 'us-central1'
+      '--set-env-vars', 'SECRET_KEY=$(openssl rand -hex 24)'
     ]
 
 images:

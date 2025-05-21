@@ -11,9 +11,6 @@ RUN pip install -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
-# Generate a random SECRET_KEY and set it as an environment variable
-RUN echo "SECRET_KEY=$(python -c 'import os; print(os.urandom(24).hex())')" >> .env
-
 # Expose the port Flask runs on
 EXPOSE 8080
 
