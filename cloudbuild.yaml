@@ -11,21 +11,18 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$REPO_NAME:$SHORT_SHA']
 
-  # Deploy to Cloud Run with a real, random SECRET_KEY
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: bash
     args:
       - -c
       - |
-        # generate a real hex secret
-        SECRET=$(openssl rand -hex 24)
-        echo "▶ Using SECRET_KEY: $SECRET"
-
-        # deploy, injecting the generated value
+        SECRET_KEY=$$(openssl rand -hex 24)
+        echo "🔑 Deploying with SECRET_KEY=$${SECRET_KEY}"
+      
         gcloud run deploy "$REPO_NAME" \
           --image "us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$REPO_NAME:$SHORT_SHA" \
           --region us-central1 \
-          --set-env-vars SECRET_KEY="$SECRET"
+          --set-env-vars SECRET_KEY="$${SECRET_KEY}"
 
 
 #  # Deploy the image to Cloud Run
