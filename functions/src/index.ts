@@ -1,7 +1,7 @@
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import { logger } from "firebase-functions";
 import * as admin from "firebase-admin";
-import sgMail from "@sendgrid/mail";
+import {setApiKey, send} from "@sendgrid/mail";
 import {getSecretFromManager} from "./environment/getSecretFromManager";
 
 // Initialize Firebase Admin SDK
@@ -31,9 +31,8 @@ export const sendWelcomeEmail = onDocumentWritten('subscribers/{subscriberId}', 
            throw new Error("SendGrid API key was not set successfully");
        }
 
-       sgMail.setApiKey(SEND_GRID_API_KEY);
+       setApiKey(SEND_GRID_API_KEY)
 
-       // Construct the email content
        const msg = {
            to: subscriberEmail, // recipient email
            from: SINGLE_SENDER_EMAIL, // sender email (your verified SendGrid email)
@@ -42,7 +41,7 @@ export const sendWelcomeEmail = onDocumentWritten('subscribers/{subscriberId}', 
            html: `<strong>Hi there,</strong><br><br>Thank you for subscribing to Dev Deviants! We are excited to have you on board.`,
        };
 
-       sgMail.send(msg).then(() => { logger.info(`Welcome email sent`); });
+       send(msg).then(() => { logger.info(`Welcome email sent`); });
 
    } catch (error) {
        logger.error(error);
