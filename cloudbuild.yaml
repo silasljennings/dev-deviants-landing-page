@@ -11,31 +11,19 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$REPO_NAME:$SHORT_SHA']
 
+  # Deploy to Cloud Run Service utilizing Bash to generate a new SECRET_KEY on each deployment
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: bash
     args:
       - -c
       - |
         SECRET_KEY=$$(openssl rand -hex 24)
-        echo "🔑 Deploying with SECRET_KEY=$${SECRET_KEY}"
+        echo "Deploying with SECRET_KEY=$${SECRET_KEY}"
       
         gcloud run deploy "$REPO_NAME" \
           --image "us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$REPO_NAME:$SHORT_SHA" \
           --region us-central1 \
           --set-env-vars SECRET_KEY="$${SECRET_KEY}"
-
-
-#  # Deploy the image to Cloud Run
-#  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#    entrypoint: gcloud
-#    args: [
-#      'run',
-#      'deploy',
-#      '$REPO_NAME',
-#      '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$REPO_NAME:$SHORT_SHA',
-#      '--region', 'us-central1',
-#      '--set-env-vars', 'SECRET_KEY=$(openssl rand -hex 24)'
-#    ]
 
 images:
   # Specify the Docker image to be pushed to Artifact Registry
