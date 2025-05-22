@@ -63,7 +63,6 @@ instance/
 .env
 *.env
 keys/
-*.json
 
 # IDE/editor settings
 .vscode/
@@ -81,3 +80,13 @@ keys/
 static/css/*.map
 service-account-key.json
 
+# Compiled JavaScript files
+lib/**/*.js
+lib/**/*.js.map
+
+# TypeScript v1 declaration files
+typings/
+
+# Node.js dependency directory
+node_modules/
+*.local

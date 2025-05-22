@@ -35,7 +35,7 @@ def create():
                 'uid': uid,
                 'email': email,
                 'subscribed_at': firestore.SERVER_TIMESTAMP,
-                'isVerified': False
+                'is_verified': False
             })
             return {"message": "Thank you for subscribing! Please verify your email!", "category": "success"}, 200  # Send success message as JSON
 
@@ -47,6 +47,36 @@ def create():
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
+
+@app.route('/verify-email')
+def verify_email():
+    token = request.args.get('token')
+    if not token:
+        return render_template('message.html', title="Invalid Link", message="No verification token provided."), 400
+
+    # 1) Find the email_verifications doc with this token
+    verifications_query_snapshot = (db.collection('email_verifications').where('token', '==', token).limit(1).get())
+    if not verifications_query_snapshot:
+        return render_template('message.html', title="Invalid Link", message="Verification link is invalid."), 404
+
+    verification_document = verifications_query_snapshot[0]
+    verification = verification_document.to_dict()
+    now_ms = int(datetime.datetime.utcnow().timestamp() * 1000)
+
+    # 2) Check expiry
+    if now_ms > verification.get('expired_stamp', 0):
+        return render_template('message.html', title="Link Expired", message="Your verification link has expired. Please request a new one."), 410
+
+    # 3) Mark the verification doc as “used” (update timestamp)
+    verification_document.reference.update({ 'updated_stamp': now_ms })
+
+    # 4) Find & update the subscriber
+    subscribers_query_snapshot = (db.collection('subscribers').where('email', '==', verification.get('email')).limit(1).get())
+    if subscribers_query_snapshot:
+        subscribers_query_snapshot[0].reference.update({'is_verified': True})
+
+    # 5) Render a success page
+    return render_template('message.html', title="Email Verified", message="Thank you! Your email address has been verified.")
 
 
 @app.context_processor

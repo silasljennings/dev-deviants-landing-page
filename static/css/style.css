@@ -34,7 +34,7 @@ nav a {
     text-decoration: none;
     font-weight: bold;
     transition: color 0.2s ease-in-out;
-    color: black;
+    color: #36013F;
 }
 nav a:hover {
     color: #F9E21F;
@@ -217,7 +217,7 @@ footer p {
 /* Spinner CSS */
 .spinner {
     display: none;
-    border-top: 4px solid #3498db;
+    border-top: 4px solid #44CFD4;
     border-radius: 50%;
     width: 40px;
     height: 40px;
