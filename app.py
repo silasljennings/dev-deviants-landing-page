@@ -48,7 +48,7 @@ def create():
                 'address': '',
                 'address_search': '',
                 'scid': '',
-                'fcmToken': '',
+                'fcm_token': '',
                 'gender': '',
                 'dob': None
             })
@@ -83,7 +83,7 @@ def verify_email():
     # 4) Find & update the subscriber
     subscribers_query_snapshot = (db.collection('subscribers').where('email', '==', verification.get('email')).limit(1).get())
     if subscribers_query_snapshot:
-        subscribers_query_snapshot[0].reference.update({'is_verified': True})
+        subscribers_query_snapshot[0].reference.update({'is_email_verified': True})
 
     # 5) Render a success page
     return render_template('message.html', title="Email Verified", message="Thank you! Your email address has been verified.")
