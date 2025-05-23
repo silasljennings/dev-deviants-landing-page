@@ -1,7 +1,7 @@
 // src/emails/ConfirmEmail.ts
 export class ConfirmEmail {
     private static readonly baseUrl = 'https://devdeviants.com';
-    private static readonly logoUrl = 'https://devdeviants.com/static/images/dev-deviants.png';
+    // private static readonly logoUrl = 'https://devdeviants.com/static/images/dev-deviants.png';
     private static readonly companyName = 'Dev Deviants';
     private static readonly supportEmail = 'support@devdeviants.com';
 
@@ -51,19 +51,7 @@ export class ConfirmEmail {
 </head>
 <body style="background-color:#f2f2f2; margin:0; padding:0;">
   <table border="0" cellpadding="0" cellspacing="0" width="100%">
-    <!-- LOGO -->
-    <tr>
-      <td align="center" bgcolor="#1a82e2">
-        <table class="container" border="0" cellpadding="0" cellspacing="0" width="600">
-          <tr>
-            <td align="center" valign="top" style="padding: 40px 0;">
-              <img src="${this.logoUrl}" alt="${this.companyName} Logo" width="120" style="display:block; border:0;" />
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
+  
     <!-- HERO -->
     <tr>
       <td align="center" bgcolor="#f2f2f2">

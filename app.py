@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from datetime import datetime
 from firebase_admin import credentials, firestore, initialize_app
-import uuid
 
 import os
+
+from models.subcriber_verification import SubscriberVerification
+from models.subscriber import Subscriber
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-secret-key')
@@ -20,42 +22,24 @@ def index():
 def create():
     try:
         email = request.form.get('email', '').strip().lower()
-
-        # Validate email
         if not email:
-            return {"message": "Please enter a valid email address", "category": "error"}, 400  # Send error message as JSON
+            return {"message": "Please enter a valid email address", "category": "error"}, 400
 
-        query = db.collection(collection_path).where('email', '==', email).limit(1)
-        docs = query.stream()
-        if any(d.exists for d in docs):
-            return {"message": "That email is already a subscriber", "category": "info"}, 400  # Send error message as JSON
-        else:
-            uid = str(uuid.uuid4())  # Generates a unique string UID
-            new_doc_ref = db.collection(collection_path).document(uid)
-            # Add new subscriber
-            # todo: break out into model class
-            new_doc_ref.set({
-                'uid': uid,
-                'email': email,
-                'subscribed_at': firestore.SERVER_TIMESTAMP,
-                'unsubscribed_at': None,
-                'is_email_verified': False,
-                'first_name': '',
-                'first_name_search': '',
-                'last_name': '',
-                'last_name_search': '',
-                'phone_number': '',
-                'address': '',
-                'address_search': '',
-                'scid': '',
-                'fcm_token': '',
-                'gender': '',
-                'dob': None
-            })
-            return {"message": "Thank you for subscribing! Please verify your email!", "category": "success"}, 200  # Send success message as JSON
+        # check existing
+        existing = db.collection('subscribers').where('email', '==', email).limit(1).stream()
+        if any(doc.exists for doc in existing):
+            return {"message": "That email is already a subscriber", "category": "info"}, 400
+
+        subscriber = Subscriber.new(email)
+        subscriber.save(db)
+
+        subscriber_verification = SubscriberVerification.new_for(email)
+        subscriber_verification.save(db)
+
+        return {"message": "Thank you for subscribing! Please verify your email!", "category": "success"}, 200
 
     except Exception as e:
-        return {"message": f"An Error Occurred: {str(e)}", "category": "error"}, 500  # Send error message if an exception occurs
+        return {"message": f"An Error Occurred: {e}", "category": "error"}, 500
 
 @app.route('/verify-email', methods=['GET'])
 def verify_email():
