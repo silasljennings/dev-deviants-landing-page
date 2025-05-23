@@ -1,7 +1,6 @@
 
 import {db} from "./startup";
 import {onDocumentCreated} from "firebase-functions/firestore";
-import {setApiKey, send} from "@sendgrid/mail";
 import {v4 as uuidv4} from "uuid"
 import {getSecretFromManager} from "./environment/getSecretFromManager";
 import {ConfirmEmail} from "./emails/confirm-email";
@@ -9,7 +8,7 @@ import {ConfirmEmail} from "./emails/confirm-email";
 export const SINGLE_SENDER_EMAIL = "silasljennings@gmail.com"
 
 /**
- * function triggered to send a welcome email when new subscriber written to the subscribers collection
+ * function triggered to send a welcome email when new subscriber created in the subscribers collection
  */
 export const sendWelcomeEmail = onDocumentCreated('subscribers/{subscriberId}', async (event) => {
     try {
@@ -22,7 +21,8 @@ export const sendWelcomeEmail = onDocumentCreated('subscribers/{subscriberId}', 
         const SEND_GRID_API_KEY = await getSecretFromManager("SEND_GRID_API_KEY");
         if (!SEND_GRID_API_KEY) { throw new Error("SendGrid API key was not set successfully"); }
 
-        setApiKey(SEND_GRID_API_KEY);
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey(SEND_GRID_API_KEY);
 
         const verificationToken = uuidv4();
         const html = ConfirmEmail.getHtml(verificationToken)
@@ -34,7 +34,7 @@ export const sendWelcomeEmail = onDocumentCreated('subscribers/{subscriberId}', 
             html: html,
         };
 
-        send(msg).then(async () => {
+        sgMail.send(msg).then(async () => {
             console.info(`Welcome email sent. Saving Email Verification Doc...`);
             const emailVerificationId = uuidv4()
                 const stamp = new Date().getTime();

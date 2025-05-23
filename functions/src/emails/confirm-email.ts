@@ -1,7 +1,7 @@
 // src/emails/ConfirmEmail.ts
 export class ConfirmEmail {
     private static readonly baseUrl = process.env.FRONTEND_URL ?? 'https://devdeviants.com';
-    private static readonly logoUrl = process.env.LOGO_URL ?? 'https://yourdomain.com/logo.png';
+    private static readonly logoUrl = process.env.LOGO_URL ?? 'https://devdeviants.com/static/images/dev-deviants.png';
     private static readonly companyName = 'Dev Deviants';
     private static readonly supportEmail = 'support@devdeviants.com';
 

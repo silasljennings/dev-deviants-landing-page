@@ -7,11 +7,14 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-secret-key')
-print(f"SECRET_KEY is set to: {app.config['SECRET_KEY']}")
 
 initialize_app()
 db = firestore.client()
 collection_path = 'subscribers'
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('index.html')
 
 @app.route('/', methods=['POST'])
 def create():
@@ -35,33 +38,40 @@ def create():
                 'uid': uid,
                 'email': email,
                 'subscribed_at': firestore.SERVER_TIMESTAMP,
-                'is_verified': False
+                'unsubscribed_at': None,
+                'is_email_verified': False,
+                'first_name': '',
+                'first_name_search': '',
+                'last_name': '',
+                'last_name_search': '',
+                'phone_number': '',
+                'address': '',
+                'address_search': '',
+                'scid': '',
+                'fcmToken': '',
+                'gender': '',
+                'dob': None
             })
             return {"message": "Thank you for subscribing! Please verify your email!", "category": "success"}, 200  # Send success message as JSON
 
     except Exception as e:
         return {"message": f"An Error Occurred: {str(e)}", "category": "error"}, 500  # Send error message if an exception occurs
 
-
-
-@app.route('/', methods=['GET'])
-def index():
-    return render_template('index.html')
-
-@app.route('/verify-email')
+@app.route('/verify-email', methods=['GET'])
 def verify_email():
     token = request.args.get('token')
+    print(token)
     if not token:
         return render_template('message.html', title="Invalid Link", message="No verification token provided."), 400
 
     # 1) Find the email_verifications doc with this token
-    verifications_query_snapshot = (db.collection('email_verifications').where('token', '==', token).limit(1).get())
+    verifications_query_snapshot = db.collection('email_verifications').where('token', '==', token).limit(1).get()
     if not verifications_query_snapshot:
         return render_template('message.html', title="Invalid Link", message="Verification link is invalid."), 404
 
     verification_document = verifications_query_snapshot[0]
     verification = verification_document.to_dict()
-    now_ms = int(datetime.datetime.utcnow().timestamp() * 1000)
+    now_ms = int(datetime.utcnow().timestamp() * 1000)
 
     # 2) Check expiry
     if now_ms > verification.get('expired_stamp', 0):
@@ -78,6 +88,7 @@ def verify_email():
     # 5) Render a success page
     return render_template('message.html', title="Email Verified", message="Thank you! Your email address has been verified.")
 
+# TODO: Unsubscribe route logic
 
 @app.context_processor
 def inject_current_year():
